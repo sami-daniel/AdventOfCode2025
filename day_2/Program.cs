@@ -45,6 +45,7 @@ namespace day_2
 
                 for (int i = 0; i < n; i++)
                 {
+                    Console.WriteLine(length);
                     parts.Add(s.Substring(i * length, length));
                 }
 
