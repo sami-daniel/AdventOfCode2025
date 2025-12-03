@@ -1,4 +1,4 @@
-use std::{fs::File, i32, io::Read, path::{Path, PathBuf}};
+use std::{fs::File, i32, io::Read};
 
 fn main() {
     let args = std::env::args().collect::<Vec<String>>();
