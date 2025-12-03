@@ -1,4 +1,4 @@
-﻿using System.Runtime.ExceptionServices;
+﻿using System.Reflection.Emit;
 
 namespace day_2
 {
@@ -23,7 +23,7 @@ namespace day_2
                 var first = long.Parse(values[0]);
                 var second = long.Parse(values[1]);
 
-                for (long i = first; i <= second; i++)
+                for (var i = first; i <= second; i++)
                 {
                     total += ShouldSum(i) ? i : 0; 
                 }
@@ -32,27 +32,49 @@ namespace day_2
             Console.WriteLine($"Output: {total}");
         }        
 
-        static bool ShouldSum(long n, int endAt = 1)
+        static bool ShouldSum(long number, int endAt = 1)
         {
-            var s = n.ToString();
-            var pattern = s[..endAt];
-            Console.WriteLine(s);
-            Console.WriteLine(pattern);
-            if (s.Length % pattern.Length == 0)
+            var stringRep = number.ToString();
+            var pattern = stringRep[..endAt];
+            var segments = CreateSegments(stringRep.ToCharArray(), pattern.Length);
+
+            if (segments.Count == 1)
             {
-                List<string> parts = [];
-                var length = s.Length / pattern.Length;
-
-                for (int i = 0; i < n; i++)
-                {
-                    Console.WriteLine(length);
-                    parts.Add(s.Substring(i * length, length));
-                }
-
-                Console.WriteLine(parts);
+                // if its equal to itself, it doesnt count.
+                // this also serves as a guard for we can safely
+                // jump the first segment comparison (that will be always true)
+                return false;
             }
 
-            return false;
+            for (var i = 1; i < segments.Count; i++)
+            {
+                var eq = segments[i].SequenceEqual(pattern.ToCharArray());
+                if (eq)
+                {
+                    // if reach continue and its in the end of loop
+                    // it will exit and jump to return true
+                    continue;
+                }
+
+                return ShouldSum(number, ++endAt);
+            }
+            
+            return true;
+        }
+
+        static List<char[]> CreateSegments(char[] input, int blockSize)
+        {
+            List<char[]> segments = [];            
+            for (int i = 0; i < input.Length; i += blockSize)
+            {
+                var size = Math.Min(blockSize, input.Length - i);
+                var block = new char[size];
+                Array.Copy(input, i, block, 0, size);
+
+                segments.Add(block);
+            }
+
+            return segments;
         }
     }
 }
