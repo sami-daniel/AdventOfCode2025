@@ -4,8 +4,7 @@ def process_line(line)
   stack = []
   line.each_char.with_index do |char, i|
     stack.pop while !stack.empty? && stack[-1] < char && (stack.length + (line.length - i) > 12)
-    stack.push(char)
-    stack.pop if stack.length > 12
+    stack.push(char) if stack.length <= 12
   end
 
   stack.join
