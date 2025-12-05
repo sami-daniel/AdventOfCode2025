@@ -1,4 +1,4 @@
-use std::{fs::File, io::Read};
+use std::{env::args, fs::File, io::Read};
 
 use num_enum::TryFromPrimitive;
 
@@ -19,19 +19,21 @@ type Position = (usize, usize);
 type Map = Vec<Vec<char>>;
 
 fn main() {
+    let args: Vec<String> = args().collect();
     let mut file_buffer = String::new();
-    File::open("/home/sami/Documentos/aoc/day_4/input.txt").unwrap().read_to_string(&mut file_buffer).unwrap();
+    File::open(args.get(1).unwrap()).unwrap().read_to_string(&mut file_buffer).unwrap();
     let map: Map = file_buffer[..].split('\n').map(|l| l.chars().collect()).collect();
     let mut accessibles = 0;
-
-    process_map(map, &mut accessibles)
+    
+    process_map(map, &mut accessibles);
 
     println!("Accessible: {accessibles}");
 }
 
-fn process_map(map: Map, accessibles: &mut i32) -> Map {
+fn process_map(map: Map, accessibles: &mut i32) {
+    let accessibles_copy = *accessibles;
     let mut new_map = Map::new();
-    _ = map.iter().map(|_| new_map.push(vec![]));
+    _ = map.iter().map(|_| new_map.push(vec![])).collect::<Vec<_>>();
 
     for (i, row) in map.iter().enumerate() {
         let column_enumerator = row.iter().enumerate();
@@ -46,7 +48,11 @@ fn process_map(map: Map, accessibles: &mut i32) -> Map {
         }
     }
 
-    panic!()
+    if *accessibles == accessibles_copy {
+        return;
+    }
+
+    process_map(new_map, accessibles);
 }
 
 fn check_if_accessible(pos: Position, c: char, map: &[Vec<char>]) -> bool {
