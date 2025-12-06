@@ -5,7 +5,13 @@ fn main() {
     let mut file_buffer = String::new();
 
     File::open(args.get(1).unwrap()).unwrap().read_to_string(&mut file_buffer).unwrap();
-    let total_lines: Vec<&str> = file_buffer[..].split('\n').filter(|l| !l.is_empty()).collect();
+    let total_lines: Vec<&str> = file_buffer[..].split('\n').map_while(|l| {
+        if l.is_empty() {
+            return None;
+        }
+
+        Some(l)
+    }).collect();
     let mut ranges = vec![];
 
     for range_str in total_lines {
